@@ -15,7 +15,7 @@ app.get('/', async (req, res) => {
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.mongoDB_user}:${process.env.mongoDB_pass}@cluster0.oqk84kq.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -29,22 +29,21 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    const additem = client.db('zingzest-world').collection('add-items')
+    const addItem = client.db('zingzest-world').collection('add-items')
     const seller_user = client.db('zingzest-world').collection('seller-users')
 
 
     await client.connect();
 
     // ! Post Method
-    app.post("/addItem", async (req, res) => {
-      const data = req.body
-      console.log(data);
-    })
+
 
 
 
 
     // ! Seller Section
+
+    // * Get Section 
 
     app.get("/seller-users", async (req, res) => {
       const result = await seller_user.find().toArray()
@@ -57,6 +56,21 @@ async function run() {
       res.send(user)
     })
 
+    app.get("/items", async (req, res) => {
+      const result = await addItem.find().toArray()
+      res.send(result)
+    })
+
+    app.get("/items/:id", async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const item = await addItem.findOne(query)
+      res.send(item)
+
+    })
+
+    // * Post Section
+
     app.post("/seller-users", async (req, res) => {
       const data = req.body
       console.log(data);
@@ -65,6 +79,28 @@ async function run() {
 
     })
 
+    app.post("/addItem", async (req, res) => {
+      const data = req.body
+      console.log(data);
+      const result = await addItem.insertOne(data)
+      res.send(result)
+    })
+
+    // * Update Section
+
+    app.put("/seller-users", async (req, res) => {
+      const data = req.body
+      const query = { email: data?.email }
+      const options = { upsert: true }
+      const updateDoc = {
+        $set: {
+          name: data.name, number: data.number, address: data.address, image: data.hostImage
+        }
+      }
+
+      const result = await seller_user.updateOne(query, updateDoc, options)
+      res.send(result)
+    })
 
 
     await client.db("admin").command({ ping: 1 });
