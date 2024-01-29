@@ -56,6 +56,10 @@ async function run() {
       res.send(user)
     })
 
+    app.get("/", async(req,res)=>{
+      
+    })
+
     app.get("/items", async (req, res) => {
       const result = await addItem.find().toArray()
       res.send(result)
