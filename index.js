@@ -56,14 +56,22 @@ async function run() {
       res.send(user)
     })
 
-    app.get("/", async(req,res)=>{
-      
+    app.get("/", async (req, res) => {
+
     })
 
     app.get("/items", async (req, res) => {
-      const result = await addItem.find().toArray()
+      const id = req.query
+      console.log(id);
+      let query
+      if (id?.data != "undefined") {
+        query = { userEmail: id.data }
+      }
+      const result = await addItem.find(query).toArray()
+
       res.send(result)
     })
+
 
     app.get("/items/:id", async (req, res) => {
       const id = req.params.id
