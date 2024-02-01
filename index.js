@@ -56,15 +56,21 @@ async function run() {
       res.send(user)
     })
 
-    app.get("/", async (req, res) => {
-
+    app.get("/search/:data", async (req, res) => {
+      const data = req.params.data
+      console.log(data);
+      const query = {$or:[{brand : {$regex: data, $options : "i"}},{ categoryType : {$regex: data, $options : "i"}},{ name : {$regex: data, $options : "i"}}]}
+      // const query1 = {categoryType : {$regex: data, $options : "i"}}
+      const searchResult = await addItem.find(query).toArray()
+      res.send(searchResult)
     })
 
     app.get("/items", async (req, res) => {
       const id = req.query
-      console.log(id);
+      // console.log(id);
       let query
-      if (id?.data != "undefined") {
+      if (id?.data != "undefined" && id.data) {
+        // console.log("hello");
         query = { userEmail: id.data }
       }
       const result = await addItem.find(query).toArray()
