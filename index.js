@@ -59,7 +59,7 @@ async function run() {
     app.get("/search/:data", async (req, res) => {
       const data = req.params.data
       console.log(data);
-      const query = {$or:[{brand : {$regex: data, $options : "i"}},{ categoryType : {$regex: data, $options : "i"}},{ name : {$regex: data, $options : "i"}}]}
+      const query = { $or: [{ brand: { $regex: data, $options: "i" } }, { categoryType: { $regex: data, $options: "i" } }, { name: { $regex: data, $options: "i" } }] }
       // const query1 = {categoryType : {$regex: data, $options : "i"}}
       const searchResult = await addItem.find(query).toArray()
       res.send(searchResult)
@@ -78,9 +78,27 @@ async function run() {
       res.send(result)
     })
 
+    app.get("/items/:email", async (req, res) => {
+      const email = req.params.email
+      const data = req.query.data
+      let sortData
+      if (data == "sorta-b") {
+        sortData = {pAddTime : 1}
+        // console.log("sorta-b");
+      }
+      if (data == "sortb-a") {
+        sortData = {pAddTime : -1}
+        // console.log("sortb-a");
+      }
+      const query = { userEmail: email }
+      const itemData = await addItem.find(query).sort(sortData).collation({$project: {pAddTime: {$dateFromString: {dateString: '$date'}}}}).toArray()
+      res.send(itemData)
+    })
 
-    app.get("/items/:id", async (req, res) => {
+
+    app.get("/item/:id", async (req, res) => {
       const id = req.params.id
+      // console.log(id);
       const query = { _id: new ObjectId(id) }
       const item = await addItem.findOne(query)
       res.send(item)
@@ -106,8 +124,9 @@ async function run() {
 
     // * Update Section
 
-    app.put("/seller-users", async (req, res) => {
+    app.patch("/seller-users", async (req, res) => {
       const data = req.body
+      console.log(data);
       const query = { email: data?.email }
       const options = { upsert: true }
       const updateDoc = {
