@@ -1,11 +1,16 @@
 const express = require('express')
 const cors = require('cors')
+var jwt = require('jsonwebtoken');
+var cookieParser = require('cookie-parser')
 require('dotenv').config()
 const app = express()
-
 const port = process.env.PORT || 2000
-app.use(cors())
+app.use(cors({
+  origin: ["http://localhost:5173"],
+  credentials: true
+}))
 app.use(express.json())
+app.use(cookieParser())
 
 app.get('/', async (req, res) => {
   res.send('Welcome to my Server')
@@ -26,6 +31,23 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+const verifyToken = async (req, res, next) => {
+  const token = req.cookies?.token
+  // console.log("paise",token);
+  if (!token) {
+    return res.status(401).send({ message: "Unauthorize User" })
+  }
+  jwt.verify(token, 'secret', async (error, decoded) => {
+    if (error) {
+      return res.status(401).send({ message: "Unauthorize wrong User" })
+    }
+    else {
+      req.user = decoded
+      next()
+    }
+  })
+}
 
 async function run() {
   try {
@@ -58,7 +80,7 @@ async function run() {
 
     app.get("/search/:data", async (req, res) => {
       const data = req.params.data
-      console.log(data);
+      // console.log(data);
       const query = { $or: [{ brand: { $regex: data, $options: "i" } }, { categoryType: { $regex: data, $options: "i" } }, { name: { $regex: data, $options: "i" } }] }
       // const query1 = {categoryType : {$regex: data, $options : "i"}}
       const searchResult = await addItem.find(query).toArray()
@@ -78,21 +100,27 @@ async function run() {
       res.send(result)
     })
 
-    app.get("/items/:email", async (req, res) => {
+    app.get("/items/:email", verifyToken, async (req, res) => {
       const email = req.params.email
       const data = req.query.data
       let sortData
       if (data == "sorta-b") {
-        sortData = {pAddTime : 1}
+        sortData = { pAddTime: 1 }
         // console.log("sorta-b");
       }
       if (data == "sortb-a") {
-        sortData = {pAddTime : -1}
+        sortData = { pAddTime: -1 }
         // console.log("sortb-a");
       }
       const query = { userEmail: email }
-      const itemData = await addItem.find(query).sort(sortData).collation({$project: {pAddTime: {$dateFromString: {dateString: '$date'}}}}).toArray()
-      res.send(itemData)
+      // console.log(req?.user);
+      if (email == req?.user?.userEmail) {
+        const itemData = await addItem.find(query).sort(sortData).toArray()
+        res.send(itemData)
+      }
+      else {
+        return res.status(403).send({ message: "unAuthorize" })
+      }
     })
 
 
@@ -140,7 +168,23 @@ async function run() {
     })
 
 
-    await client.db("admin").command({ ping: 1 });
+    // ! JWT section
+
+    app.post("/jwt", async (req, res) => {
+      const data = req.body
+      // console.log(data);
+      const token = jwt.sign(data, 'secret', { expiresIn: 60 * 60 });
+      // console.log(token);
+      res
+        .cookie("token", token, {
+          httpOnly: false,
+          secure: true,
+          sameSite: "strict"
+        })
+        .send(token)
+    })
+
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
