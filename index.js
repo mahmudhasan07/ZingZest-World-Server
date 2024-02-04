@@ -80,10 +80,19 @@ async function run() {
 
     app.get("/search/:data", async (req, res) => {
       const data = req.params.data
-      // console.log(data);
+      const data1 = req.query.data
+      // console.log(data1);
+      let filter
+        if (data1 == "sorta-b") {
+          filter = { price: 1 }
+        }
+        if (data1 == "sortb-a") {
+          filter = { price: -1 }
+        }
+
       const query = { $or: [{ brand: { $regex: data, $options: "i" } }, { categoryType: { $regex: data, $options: "i" } }, { name: { $regex: data, $options: "i" } }] }
       // const query1 = {categoryType : {$regex: data, $options : "i"}}
-      const searchResult = await addItem.find(query).toArray()
+      const searchResult = await addItem.find(query).sort(filter).toArray()
       res.send(searchResult)
     })
 
