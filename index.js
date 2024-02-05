@@ -53,6 +53,9 @@ async function run() {
   try {
     const addItem = client.db('zingzest-world').collection('add-items')
     const seller_user = client.db('zingzest-world').collection('seller-users')
+    const client_buyProduct = client.db('zingzest-world').collection('client-buyProduct')
+    const client_cartProduct = client.db('zingzest-world').collection('client-cartProduct')
+    const product_review = client.db('zingzest-world').collection('product-review')
 
 
     await client.connect();
