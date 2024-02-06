@@ -53,6 +53,7 @@ async function run() {
   try {
     const addItem = client.db('zingzest-world').collection('add-items')
     const seller_user = client.db('zingzest-world').collection('seller-users')
+    const client_user = client.db('zingzest-world').collection('client-users')
     const client_buyProduct = client.db('zingzest-world').collection('client-buyProduct')
     const client_cartProduct = client.db('zingzest-world').collection('client-cartProduct')
     const product_review = client.db('zingzest-world').collection('product-review')
@@ -60,7 +61,19 @@ async function run() {
 
     await client.connect();
 
-    // ! Post Method
+    // ! Client Section
+
+
+
+
+    // * Post section
+
+    app.post("/buy-items", async(req,res)=>{
+      const data = req.body
+      console.log(data);
+      const result = await client_buyProduct.insertOne(data)
+      res.send(result)
+    })
 
 
 
@@ -186,12 +199,12 @@ async function run() {
       const data = req.body
       // console.log(data);
       const token = jwt.sign(data, 'secret', { expiresIn: 60 * 60 });
-      // console.log(token);
+      console.log(token);
       res
         .cookie("token", token, {
           httpOnly: false,
           secure: true,
-          sameSite: "strict"
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict"
         })
         .send(token)
     })
