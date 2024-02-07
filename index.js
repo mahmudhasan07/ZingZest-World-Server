@@ -63,15 +63,64 @@ async function run() {
 
     // ! Client Section
 
+    // * GET Section
+    app.get('/client-users/:email', async (req, res) => {
+      const email = req.params.email
+      const query = { email: email }
+      const data = await client_user.findOne(query)
+      res.send(data)
+    })
 
+    app.get("/my-orders", async (req, res) => {
+      const data = req.query.data
+      console.log(data);
+      let query
+      if (data) {
+        query = {buyer : data}
+      }
+
+      const result = await client_buyProduct.find(query).toArray()
+      res.send(result)
+
+    })
+
+    app.get("/comments", async (req, res) => {
+      const result = await product_review.find().toArray()
+      res.send(result)
+    })
 
 
     // * Post section
 
-    app.post("/buy-items", async(req,res)=>{
+    app.post("/buy-items", async (req, res) => {
       const data = req.body
       console.log(data);
       const result = await client_buyProduct.insertOne(data)
+      res.send(result)
+    })
+
+    app.post("/client-users", async (req, res) => {
+      const data = req.body
+      const email = data?.email
+      if (email) {
+        const user = { email: email }
+        const result = await client_user.findOne(user)
+        if (result) {
+
+          res.send("Already Registration")
+        }
+        else {
+          const result = await client_user.insertOne(data)
+          res.send(result)
+        }
+      }
+
+    })
+
+    app.post("/comments", async (req, res) => {
+      const data = req.body
+      console.log(data);
+      const result = await product_review.insertOne(data)
       res.send(result)
     })
 
@@ -99,12 +148,12 @@ async function run() {
       const data1 = req.query.data
       // console.log(data1);
       let filter
-        if (data1 == "sorta-b") {
-          filter = { price: 1 }
-        }
-        if (data1 == "sortb-a") {
-          filter = { price: -1 }
-        }
+      if (data1 == "sorta-b") {
+        filter = { price: 1 }
+      }
+      if (data1 == "sortb-a") {
+        filter = { price: -1 }
+      }
 
       const query = { $or: [{ brand: { $regex: data, $options: "i" } }, { categoryType: { $regex: data, $options: "i" } }, { name: { $regex: data, $options: "i" } }] }
       // const query1 = {categoryType : {$regex: data, $options : "i"}}
