@@ -6,7 +6,7 @@ require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 2000
 app.use(cors({
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "https://seller-zingzest.web.app","https://client-zingzest.web.app"],
   credentials: true
 }))
 app.use(express.json())
@@ -59,7 +59,7 @@ async function run() {
     const product_review = client.db('zingzest-world').collection('product-review')
 
 
-    await client.connect();
+    // await client.connect();
 
     // ! Client Section
 
@@ -259,7 +259,7 @@ async function run() {
     })
 
     // await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
