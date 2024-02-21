@@ -194,7 +194,10 @@ async function run() {
       if (id == "toprating") {
         filter = { review: -1 }
       }
-      const result = await addItem.find().sort(filter).toArray()
+      const query = { review : {$exists : true} }
+      // const query = {price :{$gte:4000 , $lte: 5000}} //ekhne range use korle aevabe korte hbe normal range kaj kore na..
+
+      const result = await addItem.find(query).sort(filter).toArray()
       res.send(result)
     })
 
