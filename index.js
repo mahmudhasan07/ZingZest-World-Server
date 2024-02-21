@@ -89,6 +89,13 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/comments/:id', async(req,res)=>{
+      const id = req.params.id
+      const query = {id : id}
+      const result = await product_review.find(query).toArray()
+      res.send(result)
+    })
+
 
     // * Post section
 
@@ -122,6 +129,23 @@ async function run() {
       console.log(data);
       const result = await product_review.insertOne(data)
       res.send(result)
+    })
+
+    // * Patch Section
+
+    app.patch("/items/:id", async(req,res)=>{
+      const data = req.body.review
+      const id = req.params.id
+      const options = {upsert: true}
+      const filter = {_id : new ObjectId(id)}
+      const updateDoc = {
+        $set : {
+          review : data
+        }
+      }
+      const result = await addItem.updateOne(filter,updateDoc, options)
+      res.send(result)
+
     })
 
 
