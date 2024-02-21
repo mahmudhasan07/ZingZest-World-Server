@@ -6,7 +6,7 @@ require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 2000
 app.use(cors({
-  origin: ["http://localhost:5173", "https://seller-zingzest.web.app","https://client-zingzest.web.app"],
+  origin: ["http://localhost:5173", "https://seller-zingzest.web.app", "https://client-zingzest.web.app"],
   credentials: true
 }))
 app.use(express.json())
@@ -76,7 +76,7 @@ async function run() {
       console.log(data);
       let query
       if (data) {
-        query = {buyer : data}
+        query = { buyer: data }
       }
 
       const result = await client_buyProduct.find(query).toArray()
@@ -89,9 +89,9 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/comments/:id', async(req,res)=>{
+    app.get('/comments/:id', async (req, res) => {
       const id = req.params.id
-      const query = {id : id}
+      const query = { id: id }
       const result = await product_review.find(query).toArray()
       res.send(result)
     })
@@ -133,17 +133,17 @@ async function run() {
 
     // * Patch Section
 
-    app.patch("/items/:id", async(req,res)=>{
-      const data = req.body.review
+    app.patch("/items/:id", async (req, res) => {
+      const data = req.body.totalReview
       const id = req.params.id
-      const options = {upsert: true}
-      const filter = {_id : new ObjectId(id)}
+      const options = { upsert: true }
+      const filter = { _id: new ObjectId(id) }
       const updateDoc = {
-        $set : {
-          review : data
+        $set: {
+          review: data
         }
       }
-      const result = await addItem.updateOne(filter,updateDoc, options)
+      const result = await addItem.updateOne(filter, updateDoc, options)
       res.send(result)
 
     })
@@ -170,7 +170,7 @@ async function run() {
     app.get("/search/:data", async (req, res) => {
       const data = req.params.data
       const data1 = req.query.data
-      // console.log(data1);
+      console.log(data1);
       let filter
       if (data1 == "sorta-b") {
         filter = { price: 1 }
@@ -178,23 +178,23 @@ async function run() {
       if (data1 == "sortb-a") {
         filter = { price: -1 }
       }
+      if (data1 == "toprating") {
+        filter = { review: -1 }
+      }
 
       const query = { $or: [{ brand: { $regex: data, $options: "i" } }, { categoryType: { $regex: data, $options: "i" } }, { name: { $regex: data, $options: "i" } }] }
-      // const query1 = {categoryType : {$regex: data, $options : "i"}}
       const searchResult = await addItem.find(query).sort(filter).toArray()
       res.send(searchResult)
     })
 
     app.get("/items", async (req, res) => {
-      const id = req.query
-      // console.log(id);
-      let query
-      if (id?.data != "undefined" && id.data) {
-        // console.log("hello");
-        query = { userEmail: id.data }
+      const id = req.query.data
+      console.log(id);
+      let filter
+      if (id == "toprating") {
+        filter = { review: -1 }
       }
-      const result = await addItem.find(query).toArray()
-
+      const result = await addItem.find().sort(filter).toArray()
       res.send(result)
     })
 
