@@ -101,7 +101,7 @@ async function run() {
 
     app.post("/buy-items", async (req, res) => {
       const data = req.body
-      console.log(data);
+      // console.log(data);
       const result = await client_buyProduct.insertOne(data)
       res.send(result)
     })
@@ -126,7 +126,7 @@ async function run() {
 
     app.post("/comments", async (req, res) => {
       const data = req.body
-      console.log(data);
+      // console.log(data);
       const result = await product_review.insertOne(data)
       res.send(result)
     })
@@ -170,7 +170,7 @@ async function run() {
     app.get("/search/:data", async (req, res) => {
       const data = req.params.data
       const data1 = req.query.data
-      console.log(data1);
+      // console.log(data1);
       let filter
       if (data1 == "sorta-b") {
         filter = { price: 1 }
@@ -189,7 +189,6 @@ async function run() {
 
     app.get("/items", async (req, res) => {
       const id = req.query.data
-      console.log(id);
       let filter
       if (id == "toprating") {
         filter = { review: -1 }
@@ -198,6 +197,13 @@ async function run() {
       // const query = {price :{$gte:4000 , $lte: 5000}} //ekhne range use korle aevabe korte hbe normal range kaj kore na..
 
       const result = await addItem.find(query).sort(filter).toArray()
+      res.send(result)
+    })
+
+    app.get("/discount/:id", async(req,res)=>{
+      const id = req.params.id
+      const filter = {category : id}
+      const result = await addItem.find(filter).toArray()
       res.send(result)
     })
 
@@ -238,7 +244,7 @@ async function run() {
 
     app.post("/seller-users", async (req, res) => {
       const data = req.body
-      console.log(data);
+      // console.log(data);
       const result = await seller_user.insertOne(data)
       res.send(result)
 
@@ -246,7 +252,7 @@ async function run() {
 
     app.post("/addItem", async (req, res) => {
       const data = req.body
-      console.log(data);
+      // console.log(data);
       const result = await addItem.insertOne(data)
       res.send(result)
     })
@@ -255,7 +261,7 @@ async function run() {
 
     app.patch("/seller-users", async (req, res) => {
       const data = req.body
-      console.log(data);
+      // console.log(data);
       const query = { email: data?.email }
       const options = { upsert: true }
       const updateDoc = {
@@ -275,7 +281,7 @@ async function run() {
       const data = req.body
       // console.log(data);
       const token = jwt.sign(data, 'secret', { expiresIn: 60 * 60 });
-      console.log(token);
+      // console.log(token);
       res
         .cookie("token", token, {
           httpOnly: false,
