@@ -58,7 +58,6 @@ async function run() {
     const client_cartProduct = client.db('zingzest-world').collection('client-cartProduct')
     const product_review = client.db('zingzest-world').collection('product-review')
 
-
     // await client.connect();
 
     // ! Client Section
@@ -73,7 +72,7 @@ async function run() {
 
     app.get("/my-orders", async (req, res) => {
       const data = req.query.data
-      console.log(data);
+      // console.log(data);
       let query
       if (data) {
         query = { buyer: data }
@@ -184,7 +183,7 @@ async function run() {
 
       const query = { $or: [{ brand: { $regex: data, $options: "i" } }, { categoryType: { $regex: data, $options: "i" } }, { name: { $regex: data, $options: "i" } }] }
       const searchResult = await addItem.find(query).sort(filter).toArray()
-      res.send(searchResult)
+      res.send(searchResult)workin
     })
 
     app.get("/items", async (req, res) => {
@@ -193,16 +192,16 @@ async function run() {
       if (id == "toprating") {
         filter = { review: -1 }
       }
-      const query = { review : {$exists : true} }
+      const query = { review: { $exists: true } }
       // const query = {price :{$gte:4000 , $lte: 5000}} //ekhne range use korle aevabe korte hbe normal range kaj kore na..
 
       const result = await addItem.find(query).sort(filter).toArray()
       res.send(result)
     })
 
-    app.get("/discount/:id", async(req,res)=>{
+    app.get("/discount/:id", async (req, res) => {
       const id = req.params.id
-      const filter = {category : id}
+      const filter = { category: id }
       const result = await addItem.find(filter).toArray()
       res.send(result)
     })
