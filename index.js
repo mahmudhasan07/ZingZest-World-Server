@@ -105,6 +105,11 @@ async function run() {
       res.send(result)
     })
 
+    app.post("/carts", async(req,res)=>{
+      const data = req.body
+      console.log(data);
+    })
+
     app.post("/client-users", async (req, res) => {
       const data = req.body
       const email = data?.email
