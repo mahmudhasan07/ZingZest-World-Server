@@ -95,6 +95,13 @@ async function run() {
       res.send(result)
     })
 
+    app.get("/carts/:email", async (req, res) => {
+      const email = req.params.email
+      const query = { userID: email }
+      const result = await client_cartProduct.find(query).toArray()
+      res.send(result)
+    })
+
 
     // * Post section
 
@@ -105,9 +112,12 @@ async function run() {
       res.send(result)
     })
 
-    app.post("/carts", async(req,res)=>{
+    app.post("/carts", async (req, res) => {
       const data = req.body
-      console.log(data);
+      // console.log(data);
+      const result = await client_cartProduct.insertOne(data)
+      res.send(result)
+
     })
 
     app.post("/client-users", async (req, res) => {
@@ -188,7 +198,7 @@ async function run() {
 
       const query = { $or: [{ brand: { $regex: data, $options: "i" } }, { categoryType: { $regex: data, $options: "i" } }, { name: { $regex: data, $options: "i" } }] }
       const searchResult = await addItem.find(query).sort(filter).toArray()
-      res.send(searchResult)workin
+      res.send(searchResult)
     })
 
     app.get("/items", async (req, res) => {
