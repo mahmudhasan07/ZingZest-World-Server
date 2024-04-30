@@ -161,6 +161,21 @@ async function run() {
       res.send(result)
 
     })
+    app.patch("/updateItem", async (req, res) => {
+      const data = req.body
+      const id = data?.idNumber
+      const quantity = data?.finalQuantity
+      const options = { upsert: true }
+      const filter = { _id: new ObjectId(id) }
+      const updateDoc = {
+        $set: {
+          quantity: quantity
+        }
+      }
+      const result = await addItem.updateOne(filter, updateDoc, options)
+      res.send(result)
+
+    })
 
 
 
