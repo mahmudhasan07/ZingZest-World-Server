@@ -6,7 +6,7 @@ require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 2000
 app.use(cors({
-  origin: ["http://localhost:5173", "https://seller-zingzest.web.app", "https://client-zingzest.web.app"],
+  origin: ["http://localhost:5173", "https://seller-zingzest.web.app", "https://client-zingzest.web.app", "http://localhost:5174"],
   credentials: true
 }))
 app.use(express.json())
