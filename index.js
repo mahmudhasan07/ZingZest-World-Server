@@ -13,7 +13,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.get('/', async (req, res) => {
-  res.send('Welcome to my Server')
+  res.send('Welcome to our Server')
 })
 
 
