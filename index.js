@@ -103,6 +103,8 @@ async function run() {
     })
 
 
+
+
     // * Post section
 
     app.post("/buy-items", async (req, res) => {
@@ -175,6 +177,16 @@ async function run() {
       const result = await addItem.updateOne(filter, updateDoc, options)
       res.send(result)
 
+    })
+
+    // * Delete section
+
+    app.delete("/delete-card/:id", async (req, res) => {
+      const id = req.params
+      // console.log(id);
+      const query = { _id: new ObjectId(id.id) }
+      const result = await client_cartProduct.deleteOne(query)
+      res.send(result)
     })
 
 
