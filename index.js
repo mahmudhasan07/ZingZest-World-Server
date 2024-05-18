@@ -183,7 +183,6 @@ async function run() {
 
     app.delete("/delete-card/:id", async (req, res) => {
       const id = req.params
-      // console.log(id);
       const query = { _id: new ObjectId(id.id) }
       const result = await client_cartProduct.deleteOne(query)
       res.send(result)
@@ -312,6 +311,17 @@ async function run() {
       }
 
       const result = await seller_user.updateOne(query, updateDoc, options)
+      res.send(result)
+    })
+
+
+
+    // * Delete Section 
+
+    app.delete("/delete-item/:id", async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await addItem.deleteOne(query)
       res.send(result)
     })
 
