@@ -6,7 +6,7 @@ require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 2000
 app.use(cors({
-  origin: ["http://localhost:5173", "https://seller-zingzest.web.app", "https://client-zingzest.web.app", "http://localhost:5174"],
+  origin: ["http://localhost:5173", "https://seller-zingzest.web.app","https://client-zingzest-world.netlify.app", "https://client-zingzest.web.app", "http://localhost:5174"],
   credentials: true
 }))
 app.use(express.json())
@@ -15,10 +15,6 @@ app.use(cookieParser())
 app.get('/', async (req, res) => {
   res.send('Welcome to our Server')
 })
-
-
-
-
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.mongoDB_user}:${process.env.mongoDB_pass}@cluster0.oqk84kq.mongodb.net/?retryWrites=true&w=majority`;
@@ -222,7 +218,8 @@ async function run() {
         filter = { review: -1 }
       }
 
-      const query = { $or: [{ brand: { $regex: data, $options: "i" } }, { categoryType: { $regex: data, $options: "i" } }, { name: { $regex: data, $options: "i" } }] }
+      // const query = { $or: [{ brand: { $regex: data, $options: "i" } }, { categoryType: { $regex: data, $options: "i" } }, { name: { $regex: data, $options: "i" } }] }
+      const query = {categoryType : {$regex:data, $options : "i"}}
       const searchResult = await addItem.find(query).sort(filter).toArray()
       res.send(searchResult)
     })
@@ -253,7 +250,7 @@ async function run() {
       let sortData
       if (data == "sorta-b") {
         sortData = { pAddTime: 1 }
-        // console.log("sorta-b");
+        // console.log("sorta-b");  
       }
       if (data == "sortb-a") {
         sortData = { pAddTime: -1 }
@@ -284,7 +281,7 @@ async function run() {
 
     app.post("/seller-users", async (req, res) => {
       const data = req.body
-      // console.log(data);
+      console.log(data);
       const result = await seller_user.insertOne(data)
       res.send(result)
 
@@ -342,8 +339,8 @@ async function run() {
         .send(token)
     })
 
-    // await client.db("admin").command({ ping: 1 });
-    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
